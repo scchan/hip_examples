@@ -9,7 +9,7 @@ int main() {
     hip_buffer<int> x(vx);
     hip_buffer<int> y(vy);
     hip_buffer<int> z(vz);
-    kernel_01<<<vx.size(),1,1>>>(x.ptr(), y.ptr(), z.ptr());
+    kernel_01<<<1,vx.size()>>>(x.ptr(), y.ptr(), z.ptr());
 
     z.copy_from_buffer(vz);
     for(auto i : vz) {
