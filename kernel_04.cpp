@@ -1,7 +1,7 @@
 #include "kernel_04.hpp"
 
 __device__
-wr_int_fptr* wave_rotate_int_functions[2];
+wr_int_fptr* wave_rotate_int_functions[num_wr_funcs];
 
 __global__
 void init_wave_rotate_int_functions() {

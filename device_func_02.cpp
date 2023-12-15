@@ -20,6 +20,7 @@ T __wave_rotate_lds_right(T v, unsigned int n) {
 [[clang::noinline]]
 __device__
 int wave_rotate_lds_right(int v, unsigned int n) {
+    //printf("wave_rotate_lds_right\n");
     return __wave_rotate_lds_right(v, n);
 }
 [[clang::noinline]]
@@ -33,6 +34,7 @@ double wave_rotate_lds_right(double v, unsigned int n) {
 template <typename T>
 __device__
 T __wave_rotate_lds_left(T v, unsigned int n) {
+    //printf("wave_rotate_lds_left\n");
     return wave_rotate_lds_right(v, blockDim.x - n % blockDim.x); 
 }
 
