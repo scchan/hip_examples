@@ -13,3 +13,8 @@ add_link_options(--hip-link ${OFFLOAD_ARCH} ${RDC_FLAGS})
 
 include_directories(.)
 add_subdirectory(cross_tu_call)
+add_subdirectory(cross_tu_lds)
+add_subdirectory(indirect_call)
+
+
+
