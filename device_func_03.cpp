@@ -33,8 +33,8 @@ double high_vgpr_pressure(double* d, const unsigned int n) {
 // that the high_vgpr_pressure function should and is allowed to use more VGPRs
 __global__
 __launch_bounds__(256,256)  
-void same_module_calling_high_vgpr_pressure_func(double* d, const unsigned int n) {
+void same_module_calling_high_vgpr_pressure_func(double* x, double* y, const unsigned int n) {
     auto i = hip_global_thread_id_1D();
-    d[i] = high_vgpr_pressure(d,n);
+    y[i] = high_vgpr_pressure(x, n);
 }
 
