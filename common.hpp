@@ -1,7 +1,18 @@
 #pragma once
 #include "hip/hip_runtime.h"
 #include <algorithm>
+#include <cstdlib>
+#include <iostream>
 #include <vector>
+
+inline void check_hipError(hipError_t e) {
+    if (e != hipSuccess) {
+        const std::string s(hipGetErrorString(e));
+        std::cerr << "HIP error: " << s << std::endl;
+        std::exit(1);
+    }
+    return;
+}
 
 [[clang::always_inline]]
 static
@@ -15,10 +26,10 @@ template<typename T>
 class hip_buffer {
 public:
     hip_buffer(size_t num) : n(num) {
-        hipMalloc(&p, n * sizeof(T));
+        check_hipError(hipMalloc(&p, n * sizeof(T)));
     };
     ~hip_buffer() {
-        hipFree(p);
+        check_hipError(hipFree(p));
     }
     static constexpr size_t __type_size = sizeof(T);
     typedef std::vector<T> __V;
@@ -30,12 +41,12 @@ public:
 
     auto copy_to_buffer(const __V& v) {
         auto s = std::min(n, v.size());
-        hipMemcpy(p, v.data(), s * __type_size, hipMemcpyHostToDevice);
+        check_hipError(hipMemcpy(p, v.data(), s * __type_size, hipMemcpyHostToDevice));
         return s;
     }
     auto copy_from_buffer(__V& v) {
         auto s = std::min(n, v.size());
-        hipMemcpy(v.data(), p, s * __type_size, hipMemcpyDeviceToHost);
+        check_hipError(hipMemcpy(v.data(), p, s * __type_size, hipMemcpyDeviceToHost));
         return s;
     }
 private:
