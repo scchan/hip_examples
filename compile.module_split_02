@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -x
+
+SOURCE_DIR=.
+BIN_DIR=./module_split_02-bin-partial
+
+mkdir $BIN_DIR
+
+/opt/rocm/llvm/bin/clang++ -fPIC -I$SOURCE_DIR/. -xhip --offload-arch=gfx900 --offload-arch=gfx90a -fgpu-rdc -O3  -o $BIN_DIR/device_func_02.cpp.o -c $SOURCE_DIR/device_func_02.cpp
+/opt/rocm/llvm/bin/clang++ -fPIC -I$SOURCE_DIR/. -xhip --offload-arch=gfx900 --offload-arch=gfx90a -fgpu-rdc -O3  -o $BIN_DIR/kernel_01.cpp.o -c $SOURCE_DIR/kernel_01.cpp
+/opt/rocm/llvm/bin/clang++ -fPIC -I$SOURCE_DIR/. -xhip --offload-arch=gfx900 --offload-arch=gfx90a -fgpu-rdc -O3  -o $BIN_DIR/kernel_02.cpp.o -c $SOURCE_DIR/kernel_02.cpp
+/opt/rocm/llvm/bin/clang++ -fPIC -I$SOURCE_DIR/. -xhip --offload-arch=gfx900 --offload-arch=gfx90a -fgpu-rdc -O3  -o $BIN_DIR/device_func_01.cpp.o -c $SOURCE_DIR/device_func_01.cpp
+/opt/rocm/llvm/bin/clang++ -fPIC -I$SOURCE_DIR/. -xhip --offload-arch=gfx900 --offload-arch=gfx90a -fgpu-rdc -O3  -o $BIN_DIR/call_kernel_01.cpp.o -c $SOURCE_DIR/module_split_02/call_kernel_01.cpp
+/opt/rocm/llvm/bin/clang++ -fPIC -I$SOURCE_DIR/. -xhip --offload-arch=gfx900 --offload-arch=gfx90a -fgpu-rdc -O3  -o $BIN_DIR/call_kernel_02.cpp.o -c $SOURCE_DIR/module_split_02/call_kernel_02.cpp
+
+
+/opt/rocm/llvm/bin/clang++ -r --offload-arch=gfx900 --offload-arch=gfx90a -fgpu-rdc -O3 $BIN_DIR/kernel_01.cpp.o \
+$BIN_DIR/device_func_01.cpp.o $BIN_DIR/kernel_02.cpp.o $BIN_DIR/device_func_02.cpp.o \
+$BIN_DIR/call_kernel_01.cpp.o \
+$BIN_DIR/call_kernel_02.cpp.o  -o  $BIN_DIR/partial.o 
+
+
+/opt/rocm/llvm/bin/clang++  -fPIC -I$SOURCE_DIR/. -xhip --offload-arch=gfx900 --offload-arch=gfx90a -O3  -o $BIN_DIR/module_split_02.cpp.o -c $SOURCE_DIR/module_split_02/module_split_02.cpp
+/opt/rocm/llvm/bin/clang++  -fPIC -I$SOURCE_DIR/. -xhip --offload-arch=gfx900 --offload-arch=gfx90a -O3  -o $BIN_DIR/kernel_07.cpp.o -c $SOURCE_DIR/kernel_07.cpp
+/opt/rocm/llvm/bin/clang++  -fPIC -I$SOURCE_DIR/. -xhip --offload-arch=gfx900 --offload-arch=gfx90a -O3  -o $BIN_DIR/call_kernel_07.cpp.o -c $SOURCE_DIR/module_split_02/call_kernel_07.cpp
+
+/opt/rocm/llvm/bin/clang++  --hip-link --offload-arch=gfx900 --offload-arch=gfx90a  $BIN_DIR/kernel_07.cpp.o $BIN_DIR/call_kernel_07.cpp.o  $BIN_DIR/partial.o \
+$BIN_DIR/module_split_02.cpp.o \
+-o $BIN_DIR/module_split_02
