@@ -5,7 +5,8 @@
 #include <iostream>
 #include <vector>
 
-inline void check_hipError(hipError_t e) {
+inline 
+void check_hipError(hipError_t e) {
     if (e != hipSuccess) {
         const std::string s(hipGetErrorString(e));
         std::cerr << "HIP error: " << s << std::endl;
