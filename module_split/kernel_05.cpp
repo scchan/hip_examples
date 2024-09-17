@@ -11,3 +11,13 @@ void kernel_rotate_int(unsigned int dir, int* ax, int* ay, unsigned int n) {
       ay[i] = t;
     }
 }
+
+__global__
+void kernel_math_int(unsigned int op, int* ax, int* ay, int* az) {
+    if (op < num_math_funcs) {
+      auto i = hip_global_thread_id_1D();
+      auto t = math_int_functions[op](ax[i], ay[i]);
+      //printf("i = %d, ax[i] = %d, ay[i] = %d \n", i, ax[i], t);
+      az[i] = t;
+    }
+}

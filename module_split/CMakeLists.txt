@@ -11,7 +11,9 @@ set(RDC_FLAGS -fgpu-rdc)
 
 add_compile_options(${HIP_COMPILE_FLAGS} ${RDC_FLAGS} ${OPT_LEVEL})
 
-set(SPLIT_MODULE_FLAGS -Xoffload-linker --lto-partitions=4)
+set(SPLIT_MODULE_FLAGS -Xoffload-linker --lto-partitions=16)
+set(SPLIT_MODULE_FLAGS ${SPLIT_MODULE_FLAGS}  -mllvm --amdgpu-module-splitting-print-partition-summaries=module_split_summaries)
+
 add_link_options(--hip-link ${OFFLOAD_ARCH} ${RDC_FLAGS} ${OPT_LEVEL} ${SPLIT_MODULE_FLAGS})
 
 include_directories(.)
